@@ -9,6 +9,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class ULMAHealthComponent;
+class UAnimMontage;
 
 UCLASS()
 class LEAVEMEALONE_API ALMADefaultCharacter : public ACharacter
@@ -22,7 +23,31 @@ public:
 	UFUNCTION()
 	ULMAHealthComponent* GetHealthComponent() const { return HealthComponent; }
 
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	float GetStamina() const { return Stamina; };
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	float GetSprinting() const { return IsSprinting; };
+
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components|Stamina")
+	float SprintSpeedMultiplier = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components|Stamina")
+	float MaxStamina = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components|Stamina")
+	float StaminaDrainRate = 50.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components|Stamina")
+	float StaminaRecoveryRate = 10.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Stamina")
+	bool IsSprinting = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* DeathMontage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Health")
 	ULMAHealthComponent* HealthComponent;
@@ -54,6 +79,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+		
 	float YRotation = -75.0f; //Поворот камеры по оси Y
 	float ArmLength = 1400.0f; //Длина "штатива"
 
@@ -63,7 +89,18 @@ private:
 
 	float FOV = 55.0f; //Поле зрения
 
+	float DefaultWalkSpeed;
+	float Stamina = 0.0f;
+	bool CanSprint = true;
+	void StartSprinting();
+	void StopSprinting();
+	void StaminaManager();
+
 	void MoveForward(float Value); //движение по оси Х
 	void MoveRight(float Value); //движение по оси Y
 	void MoveCameraZoom(float Value); //приближение\отдаление камеры
+
+	void OnDeath(); //реакция на смерть персонажа
+	void RotationPlayerOnCursor();
+	void OnHealthChanged(float NewHealth);
 };
