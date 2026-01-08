@@ -9,6 +9,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class ULMAHealthComponent;
+class ULMAWeaponComponent;
 class UAnimMontage;
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 	float GetSprinting() const { return IsSprinting; };
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	ULMAWeaponComponent* WeaponComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components|Stamina")
 	float SprintSpeedMultiplier = 2.0f;
