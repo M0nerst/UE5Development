@@ -3,7 +3,10 @@
 #include "Weapon/LMAWeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "Weapon/LMABaseWeapon.h"
+#include "Player/LMADefaultCharacter.h"
 #include "Animations/LMAReloadFinishedAnimNotify.h"
+
+class ALMADefaultCharacter;
 
 // Sets default values for this component's properties
 ULMAWeaponComponent::ULMAWeaponComponent()
@@ -21,6 +24,8 @@ void ULMAWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnWeapon();
+
+	InitAnimNotify();
 }
 
 // Called every frame
@@ -41,17 +46,12 @@ void ULMAWeaponComponent::SpawnWeapon()
 		{
 			FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
 			Weapon->AttachToComponent(Character->GetMesh(), AttachmentRules, "r_Weapon_Socket");
+			Weapon->OnAmmoEmpty.AddDynamic(this, &ULMAWeaponComponent::OnAmmoEmpty);
 		}
 	}
 }
 
-void ULMAWeaponComponent::Fire()
-{
-	if (Weapon && !AnimReloading)
-	{
-		Weapon->Fire();
-	}
-}
+
 
 void ULMAWeaponComponent::InitAnimNotify()
 {
@@ -75,19 +75,72 @@ void ULMAWeaponComponent::OnNotifyReloadFinished(USkeletalMeshComponent* Skeleta
 	{
 		AnimReloading = false;
 	}
+	if (IsFiring)
+	{
+		StartFire();
+	}
 }
 
 bool ULMAWeaponComponent::CanReload() const
 {
-	return !AnimReloading;
+	return !AnimReloading && Weapon && !Weapon->IsCurrentClipFull();
 }
 
 void ULMAWeaponComponent::Reload()
 {
 	if (!CanReload())
 		return;
+
+	Weapon->StopFire();
+
 	Weapon->ChangeClip();
 	AnimReloading = true;
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 	Character->PlayAnimMontage(ReloadMontage);
+}
+
+void ULMAWeaponComponent::StartFire()
+{
+	const auto Character = Cast<ALMADefaultCharacter>(GetOwner());
+	if (Character && !Character->GetSprinting() && Weapon && !AnimReloading)
+	{
+		IsFiring = true;
+		Weapon->StartFire();
+	}
+}
+
+void ULMAWeaponComponent::Fire()
+{
+	const auto Character = Cast<ALMADefaultCharacter>(GetOwner());
+	if (Weapon && !AnimReloading && !Character->GetSprinting())
+	{
+		Weapon->Fire();
+	}
+}
+
+void ULMAWeaponComponent::StopFire()
+{
+	if (Weapon)
+	{
+		IsFiring = false;
+		Weapon->StopFire();
+	}
+}
+
+void ULMAWeaponComponent::OnAmmoEmpty()
+{
+	if (Weapon && CanReload())
+	{
+		Reload();
+	}
+}
+
+bool ULMAWeaponComponent::GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const
+{
+	if (Weapon)
+	{
+		AmmoWeapon = Weapon->GetCurrentAmmoWeapon();
+		return true;
+	}
+	return false;
 }

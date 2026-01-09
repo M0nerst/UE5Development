@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "LMABaseWeapon.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAmmoEmpty);
+
 class USkeletalMeshComponent;
 
 USTRUCT(BlueprintType)
@@ -14,29 +16,36 @@ struct FAmmoWeapon
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	int32 Bullets;
+	int32 Bullets = 30;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	int32 Clips;
+	int32 Clips = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	bool Infinite;
+	bool Infinite = false;
 };
 
 UCLASS()
 class LEAVEMEALONE_API ALMABaseWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ALMABaseWeapon();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	FAmmoWeapon AmmoWeapon{30, 0, true};
+	FAmmoWeapon AmmoWeapon{30, 0, false};
+
+	FOnAmmoEmpty OnAmmoEmpty;
+	FAmmoWeapon GetCurrentAmmoWeapon() const { return CurrentAmmoWeapon; }
 
 	void Fire();
+	void StartFire();
+	void StopFire();
 	void ChangeClip();
+	bool IsCurrentClipFull() const;
+	/*bool IsClipAvailable();*/
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,15 +61,11 @@ protected:
 	void DecrementBullets();
 	bool IsCurrentClipEmpty() const;
 
-
-	
-
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-
 	FAmmoWeapon CurrentAmmoWeapon;
-
+	FTimerHandle FireTimerHandle;
 };
