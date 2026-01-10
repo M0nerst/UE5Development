@@ -94,7 +94,7 @@ private:
 	float ArmLength = 1400.0f; //Длина "штатива"
 
 	float MaxArmLength = 3000.0f;
-	float MinArmLength = 800.0f;
+	float MinArmLength = 1500.0f;
 	float ZoomSpeed = 100.0f;
 
 	float FOV = 55.0f; //Поле зрения
