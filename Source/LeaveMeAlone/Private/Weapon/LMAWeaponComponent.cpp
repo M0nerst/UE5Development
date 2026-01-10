@@ -52,6 +52,16 @@ void ULMAWeaponComponent::SpawnWeapon()
 }
 
 
+bool ULMAWeaponComponent::GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const
+{
+	if (Weapon)
+	{
+		AmmoWeapon = Weapon->GetCurrentAmmoWeapon();
+		return true;
+	}
+	return false;
+}
+
 
 void ULMAWeaponComponent::InitAnimNotify()
 {
@@ -135,12 +145,4 @@ void ULMAWeaponComponent::OnAmmoEmpty()
 	}
 }
 
-bool ULMAWeaponComponent::GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const
-{
-	if (Weapon)
-	{
-		AmmoWeapon = Weapon->GetCurrentAmmoWeapon();
-		return true;
-	}
-	return false;
-}
+

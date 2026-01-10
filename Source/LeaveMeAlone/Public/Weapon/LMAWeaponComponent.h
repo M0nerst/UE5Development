@@ -26,6 +26,10 @@ public:
 	UFUNCTION()
 	void OnAmmoEmpty();
 
+	
+	UFUNCTION(BlueprintCallable)
+	bool GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -41,8 +45,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
-	bool GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const;
 
 private:
 	UPROPERTY()

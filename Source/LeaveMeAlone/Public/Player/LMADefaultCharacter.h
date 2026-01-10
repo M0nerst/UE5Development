@@ -30,6 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	float GetSprinting() const { return IsSprinting; };
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnHealthChanged(float NewHealth);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Character")
+	void OnDeath();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -104,7 +110,7 @@ private:
 	void MoveRight(float Value); //движение по оси Y
 	void MoveCameraZoom(float Value); //приближение\отдаление камеры
 
-	void OnDeath(); //реакция на смерть персонажа
+/*	void OnDeath();*/ //реакция на смерть персонажа
 	void RotationPlayerOnCursor();
-	void OnHealthChanged(float NewHealth);
+	/*void OnHealthChanged(float NewHealth);*/
 };

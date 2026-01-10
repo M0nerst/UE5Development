@@ -57,10 +57,13 @@ void ALMADefaultCharacter::BeginPlay()
 			CurrentCursor = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), CursorMaterial, CursorSize, FVector(0));
 		}
 
-	HealthComponent->OnDeath.AddUObject(this, &ALMADefaultCharacter::OnDeath);
-
+	/*HealthComponent->OnDeath.AddUObject(this, &ALMADefaultCharacter::OnDeath);
 	OnHealthChanged(HealthComponent->GetHealth());
-	HealthComponent->OnHealthChanged.AddUObject(this, &ALMADefaultCharacter::OnHealthChanged);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ALMADefaultCharacter::OnHealthChanged);*/
+
+	HealthComponent->OnDeath.AddDynamic(this, &ALMADefaultCharacter::OnDeath);
+	HealthComponent->OnHealthChanged.AddDynamic(this, &ALMADefaultCharacter::OnHealthChanged);
+
 
 	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	
@@ -156,7 +159,7 @@ void ALMADefaultCharacter::MoveCameraZoom(float Value)
 	}
 }
 
-void ALMADefaultCharacter::OnDeath()
+void ALMADefaultCharacter::OnDeath_Implementation()
 {
 	CurrentCursor->DestroyRenderState_Concurrent();
 	PlayAnimMontage(DeathMontage);
@@ -185,7 +188,7 @@ void ALMADefaultCharacter::RotationPlayerOnCursor()
 }
 
 
-void ALMADefaultCharacter::OnHealthChanged(float NewHealth)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Health = %f"), NewHealth));
-}
+//void ALMADefaultCharacter::OnHealthChanged(float NewHealth)
+//{
+//	/*GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Health = %f"), NewHealth));*/
+//}

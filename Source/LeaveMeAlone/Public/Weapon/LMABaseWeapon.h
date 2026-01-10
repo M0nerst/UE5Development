@@ -16,13 +16,13 @@ struct FAmmoWeapon
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	int32 Bullets = 30;
+	int32 Bullets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	int32 Clips = 0;
+	int32 Clips;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	bool Infinite = false;
+	bool Infinite;
 };
 
 UCLASS()
@@ -38,6 +38,7 @@ public:
 	FAmmoWeapon AmmoWeapon{30, 0, false};
 
 	FOnAmmoEmpty OnAmmoEmpty;
+
 	FAmmoWeapon GetCurrentAmmoWeapon() const { return CurrentAmmoWeapon; }
 
 	void Fire();
@@ -64,8 +65,9 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	FAmmoWeapon CurrentAmmoWeapon;
 
 private:
-	FAmmoWeapon CurrentAmmoWeapon;
+	
 	FTimerHandle FireTimerHandle;
 };
